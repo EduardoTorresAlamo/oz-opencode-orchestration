@@ -1,0 +1,53 @@
+Warp + Oz orchestration with OpenCode delegation
+
+This scaffold launches multiple Oz cloud runs in parallel and instructs each run to delegate all code changes to OpenCode.
+
+Contents:
+- scripts/create_environment_with_opencode.sh
+- scripts/run_parallel_oz_opencode.py
+- scripts/watch_oz_runs.py
+- jobs.example.json
+
+Step 1) Authenticate
+  oz login
+
+Step 2) Create provider secrets for OpenCode (create only what you need)
+  oz secret create --team ANTHROPIC_API_KEY
+  oz secret create --team OPENAI_API_KEY
+  oz secret create --team GEMINI_API_KEY
+
+  Notes:
+  - Team secrets are injected automatically as environment variables for cloud runs.
+  - Use --personal instead of --team if you want user-scoped secrets.
+
+Step 3) Create one environment per repo (includes OpenCode installation)
+  ./scripts/create_environment_with_opencode.sh --name repo-a-env --repo your-org/repo-a --team
+  ./scripts/create_environment_with_opencode.sh --name repo-b-env --repo your-org/repo-b --team
+
+Step 4) Prepare jobs config
+  cp jobs.example.json jobs.json
+  Edit jobs.json:
+  - environment_id
+  - repo
+  - task
+  - oz_model (optional per job)
+  - opencode_model_hint (optional prompt hint)
+
+Step 5) Dry-run command generation
+  python3 scripts/run_parallel_oz_opencode.py --config jobs.json --dry-run
+
+Step 6) Launch parallel cloud runs
+  python3 scripts/run_parallel_oz_opencode.py --config jobs.json --max-workers 6
+
+  Output artifacts are written to:
+  - runs/<timestamp>/run-results.json
+  - runs/<timestamp>/run-ids.json
+  - runs/latest-run-ids.json
+
+Step 7) Watch run status
+  python3 scripts/watch_oz_runs.py --runs-file runs/latest-run-ids.json --interval 20
+
+How model selection works:
+- oz_model controls the orchestrator model for each Oz run.
+- OpenCode model/provider selection is typically driven by OpenCode/provider configuration and secrets in the environment.
+- opencode_model_hint is passed as guidance in the prompt so the cloud agent can apply your intended OpenCode model strategy.

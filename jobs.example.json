@@ -1,0 +1,25 @@
+{
+  "defaults": {
+    "scope": "team",
+    "oz_model": "auto-efficient",
+    "open_after_submit": false
+  },
+  "jobs": [
+    {
+      "name": "repo-a-auth-fixes",
+      "environment_id": "REPLACE_WITH_ENV_ID_FOR_REPO_A",
+      "repo": "your-org/repo-a",
+      "task": "Fix authentication token refresh bugs, run tests, and open a PR with a concise risk summary.",
+      "oz_model": "claude-4-6-sonnet-high",
+      "opencode_model_hint": "Use an Anthropic Sonnet-class model for this task."
+    },
+    {
+      "name": "repo-b-dependency-upgrades",
+      "environment_id": "REPLACE_WITH_ENV_ID_FOR_REPO_B",
+      "repo": "your-org/repo-b",
+      "task": "Upgrade outdated dependencies, run lint and tests, and open a PR with a changelog summary.",
+      "oz_model": "gpt-5-3-codex-medium",
+      "opencode_model_hint": "Use a Codex-class model for this task."
+    }
+  ]
+}
