@@ -175,3 +175,19 @@ Creates an Oz environment with OpenCode pre-installed. Run once per target repo 
 - The `runs/` directory may contain run IDs and task output — also gitignored by default.
 - The prompt injected into each Oz run explicitly instructs the agent to delegate all code operations to OpenCode and not use Warp's built-in coding tools directly.
 - If a PR is created, OpenCode is instructed to print the PR URL and branch name so the Oz orchestrator can capture and report it.
+
+## Troubleshooting
+
+**Environment creation fails**
+Run with `--dry-run` to validate your `jobs.json` before submitting. Check that the Oz CLI is authenticated (`oz auth status`).
+
+**A run hangs or never completes**
+Use `watch_oz_runs.py` with `--timeout 900` (15 min). Oz environments have a default idle timeout — if the agent stalls, the run will be garbage-collected automatically.
+
+**Partial success (some edits applied, others not)**
+Re-run only the failed jobs by creating a new `jobs.json` with just those entries. OpenCode is idempotent for most edits.
+
+**Rate limits**
+If submitting many jobs at once, reduce `--max-workers` to 2–3. Oz may throttle environment creation under heavy load.
+
+**Expected run time:** 5–15 minutes per job depending on repo size and task complexity.
