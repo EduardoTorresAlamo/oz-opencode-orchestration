@@ -14,7 +14,7 @@ The pattern: Oz spins up a cloud environment for a given repo, and the agent's p
 
 ## Prerequisites
 
-- [Oz CLI](https://warp.dev/oz) — installed and on your PATH
+- [Oz CLI](https://warp.dev/oz): must be installed and on your PATH
 - Python 3.9+
 - At least one provider API key stored as an Oz secret (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, or `GEMINI_API_KEY`)
 - An Oz environment already created for each repo you want to target (see Step 3 below)
@@ -23,13 +23,13 @@ No Python dependencies beyond the standard library.
 
 ## Quickstart
 
-### Step 1 — Authenticate
+### Step 1: Authenticate
 
 ```bash
 oz login
 ```
 
-### Step 2 — Create provider secrets
+### Step 2: Create provider secrets
 
 Store your LLM API keys as Oz secrets so they are injected automatically into cloud runs:
 
@@ -41,7 +41,7 @@ oz secret create --team GEMINI_API_KEY
 
 Use `--personal` instead of `--team` for user-scoped secrets. Create only the keys you need.
 
-### Step 3 — Create one environment per repo
+### Step 3: Create one environment per repo
 
 The `create_environment_with_opencode.sh` script creates an Oz environment, clones the target repo, and installs OpenCode during setup:
 
@@ -61,15 +61,15 @@ Options:
 | `--setup-command` | Extra setup commands to run (repeatable) |
 | `--team` / `--personal` | Scope for the environment |
 
-### Step 4 — Prepare your jobs config
+### Step 4: Prepare your jobs config
 
 ```bash
 cp jobs.example.json jobs.json
 ```
 
-Edit `jobs.json` with your environment IDs and tasks. Keep `jobs.json` out of version control — it contains real environment IDs. See `jobs.example.json` for the schema.
+Edit `jobs.json` with your environment IDs and tasks. Keep `jobs.json` out of version control because it contains real environment IDs. See `jobs.example.json` for the schema.
 
-### Step 5 — Dry run
+### Step 5: Dry run
 
 Preview the commands that will be built without submitting anything:
 
@@ -77,7 +77,7 @@ Preview the commands that will be built without submitting anything:
 python3 scripts/run_parallel_oz_opencode.py --config jobs.json --dry-run
 ```
 
-### Step 6 — Launch
+### Step 6: Launch
 
 ```bash
 python3 scripts/run_parallel_oz_opencode.py --config jobs.json --max-workers 6
@@ -92,7 +92,7 @@ runs/<timestamp>/<job-name>.log     # per-job log
 runs/latest-run-ids.json            # symlink-equivalent, always points to latest
 ```
 
-### Step 7 — Watch run status
+### Step 7: Watch run status
 
 ```bash
 python3 scripts/watch_oz_runs.py --runs-file runs/latest-run-ids.json --interval 20
@@ -171,8 +171,8 @@ Creates an Oz environment with OpenCode pre-installed. Run once per target repo 
 
 ## Notes
 
-- `jobs.json` contains real environment IDs — keep it out of version control.
-- The `runs/` directory may contain run IDs and task output — also gitignored by default.
+- `jobs.json` contains real environment IDs; keep it out of version control.
+- The `runs/` directory may contain run IDs and task output; it is also gitignored by default.
 - The prompt injected into each Oz run explicitly instructs the agent to delegate all code operations to OpenCode and not use Warp's built-in coding tools directly.
 - If a PR is created, OpenCode is instructed to print the PR URL and branch name so the Oz orchestrator can capture and report it.
 
@@ -182,7 +182,7 @@ Creates an Oz environment with OpenCode pre-installed. Run once per target repo 
 Run with `--dry-run` to validate your `jobs.json` before submitting. Check that the Oz CLI is authenticated (`oz auth status`).
 
 **A run hangs or never completes**
-Use `watch_oz_runs.py` with `--timeout 900` (15 min). Oz environments have a default idle timeout — if the agent stalls, the run will be garbage-collected automatically.
+Use `watch_oz_runs.py` with `--timeout 900` (15 min). Oz environments have a default idle timeout: if the agent stalls, the run will be garbage-collected automatically.
 
 **Partial success (some edits applied, others not)**
 Re-run only the failed jobs by creating a new `jobs.json` with just those entries. OpenCode is idempotent for most edits.
